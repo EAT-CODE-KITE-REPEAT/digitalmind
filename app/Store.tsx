@@ -2,22 +2,12 @@ import { AsyncStorage } from "react-native";
 import { applyMiddleware, compose, createStore } from "redux";
 import { persistCombineReducers, persistStore } from "redux-persist";
 
-export type Event = {
+export type Entry = {
   id: number;
   title: string;
-  date: number;
-  endDate: number;
   description: string;
   maxParticipants: number;
-  participants: Participant[];
 };
-
-export const ATTENDANCE_MAYBE = 1;
-export const ATTENDANCE_YES = 2;
-export const ATTENDANCE_NO = 0;
-type ATTENDANCE_YES = 2;
-type ATTENDANCE_MAYBE = 1;
-type ATTENDANCE_NO = 0;
 
 export type User = {
   activated: boolean;
@@ -30,23 +20,18 @@ export type User = {
   bio: string;
   pushtoken: string;
 };
-export type Participant = {
-  eventId: number;
-  name: string;
-  attendance: ATTENDANCE_YES | ATTENDANCE_MAYBE | ATTENDANCE_NO;
-};
 export type Device = {
   loginToken: number;
   logged: boolean;
-  events: Event[];
+  entries: Entry[];
   user: User | null;
 };
 
 const initDevice = {
-  loginToken: Math.round(Math.random() * Number.MAX_SAFE_INTEGER),
+  loginToken: "token" + Math.round(Math.random() * Number.MAX_SAFE_INTEGER),
   logged: false,
   goals: [],
-  events: [],
+  entries: [],
   user: null,
 };
 
@@ -59,15 +44,15 @@ const deviceReducer = (
       return initDevice;
     }
 
-    case "ADD_EVENT": {
-      return { ...state, events: [...state.events, action.value] };
+    case "ADD_ENTRY": {
+      return { ...state, entries: [...state.entries, action.value] };
     }
 
-    case "UPDATE_EVENT": {
+    case "UPDATE_ENTRY": {
       return {
         ...state,
-        events: state.events.map((event) =>
-          event.id === action.value.id ? action.value : event
+        entries: state.entries.map((entry) =>
+          entry.id === action.value.id ? action.value : entry
         ),
       };
     }
@@ -76,13 +61,13 @@ const deviceReducer = (
       return { ...state, user: action.value };
     }
 
-    case "SET_EVENTS": {
-      return { ...state, events: action.value };
+    case "SET_ENTRIES": {
+      return { ...state, entries: action.value };
     }
-    case "DELETE_EVENT": {
+    case "DELETE_ENTRY": {
       return {
         ...state,
-        events: state.events.filter((a) => a.id !== action.value),
+        entries: state.entries.filter((a) => a.id !== action.value),
       };
     }
 

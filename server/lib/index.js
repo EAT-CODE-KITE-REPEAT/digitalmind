@@ -45,73 +45,20 @@ User.init(
   { sequelize, modelName: "user" }
 );
 
-class Event extends Model {}
+class Entry extends Model {}
 
-Event.init(
+Entry.init(
   {
     title: DataTypes.STRING,
-    date: DataTypes.STRING,
-    endDate: DataTypes.STRING,
+    type: DataTypes.STRING,
+    url: DataTypes.STRING,
+    itemId: DataTypes.STRING,
     description: DataTypes.STRING,
-    maxParticipants: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
   },
   {
     sequelize,
-    modelName: "event",
-  }
-);
-
-class Participant extends Model {}
-
-Participant.init(
-  {
-    eventId: DataTypes.INTEGER,
-    name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    attendance: DataTypes.TINYINT,
-    participantToken: DataTypes.BIGINT,
-  },
-  {
-    sequelize,
-    modelName: "participant",
-  }
-);
-
-Participant.belongsTo(Event, {
-  foreignKey: "eventId",
-});
-Event.hasMany(Participant, {
-  foreignKey: "eventId",
-});
-
-class Question extends Model {}
-
-Question.init(
-  {
-    eventId: DataTypes.INTEGER,
-    question: DataTypes.STRING,
-    type: DataTypes.TINYINT,
-    answers: DataTypes.STRING,
-  },
-  {
-    sequelize,
-    modelName: "question",
-  }
-);
-
-class Answer extends Model {}
-
-Answer.init(
-  {
-    eventId: DataTypes.INTEGER,
-    questionId: DataTypes.INTEGER,
-    participantId: DataTypes.INTEGER,
-    answer: DataTypes.STRING,
-  },
-  {
-    sequelize,
-    modelName: "answer",
+    modelName: "entry",
   }
 );
 
@@ -176,7 +123,7 @@ server.post("/forgotPassword2", (req, res) =>
 );
 
 server.post("/updateProfile", (req, res) =>
-  require("./updateProfile").updateProfile(req, res, sequelize, User, Event)
+  require("./updateProfile").updateProfile(req, res, sequelize, User, Entry)
 );
 
 server.post("/changePassword", (req, res) =>
@@ -190,80 +137,25 @@ server.post("/signup", (req, res) =>
 );
 
 // events
-server.post("/upsertEvent", (req, res) =>
-  require("./upsertEvent").upsertEvent(
-    req,
-    res,
-    sequelize,
-    User,
-    Event,
-    Participant
-  )
+server.post("/upsertEntry", (req, res) =>
+  require("./upsertEntry").upsertEntry(req, res, sequelize, User, Entry)
 );
 
-server.get("/autocomplete", (req, res) =>
-  require("./autocomplete").autocomplete(req, res, sequelize)
+server.get("/entry", (req, res) =>
+  require("./entry").entry(req, res, sequelize, User, Entry)
 );
 
-server.post("/participate", (req, res) =>
-  require("./participate").participate(
-    req,
-    res,
-    sequelize,
-    User,
-    Event,
-    Participant,
-    Question,
-    Answer
-  )
+server.get("/entries", (req, res) =>
+  require("./entries").entries(req, res, sequelize, User, Entry)
 );
 
-server.get("/event", (req, res) =>
-  require("./event").event(
-    req,
-    res,
-    sequelize,
-    User,
-    Event,
-    Participant,
-    Question,
-    Answer
-  )
-);
-
-server.get("/participant", (req, res) =>
-  require("./participant").participant(req, res, sequelize, Participant)
-);
-
-server.get("/events", (req, res) =>
-  require("./events").events(
-    req,
-    res,
-    sequelize,
-    User,
-    Event,
-    Participant,
-    Question,
-    Answer
-  )
-);
-
-server.post("/deleteEvent", (req, res) =>
-  require("./deleteEvent").deleteEvent(
-    req,
-    res,
-    sequelize,
-    User,
-    Event,
-    Participant,
-    Question,
-    Answer
-  )
+server.post("/deleteEntry", (req, res) =>
+  require("./deleteEntry").deleteEntry(req, res, sequelize, User, Entry)
 );
 
 // create server
 
-const port = process.env.PORT || 4005;
+const port = process.env.PORT || 4006;
 
 server.get("/", (req, res) => {
   res.send(listEndpoints(server));

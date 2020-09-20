@@ -5,7 +5,7 @@ const forgotPassword = async (req, res, User) => {
 
   const user = await User.findOne({ where: { email, fid } });
 
-  const EMAIL_FROM = "info@communify.cc";
+  const EMAIL_FROM = "info@mindmirror.co";
 
   if (user) {
     const forgotPasswordToken = Math.round(Math.random() * 999999999);
@@ -13,8 +13,8 @@ const forgotPassword = async (req, res, User) => {
     const msg = {
       to: email,
       from: EMAIL_FROM,
-      subject: "Reset password communify.cc",
-      text: `Click the link to reset your password: https://communify.cc/recoverPassword/${forgotPasswordToken}`,
+      subject: "Reset password mindmirror.co",
+      text: `Click the link to reset your password: https://mindmirror.co/recoverPassword/${forgotPasswordToken}`,
     };
 
     User.update({ forgotPasswordToken }, { where: { id: user.id } });

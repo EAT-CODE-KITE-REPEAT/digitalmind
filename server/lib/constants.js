@@ -1,5 +1,3 @@
-const Constants = {
-  PASSWORD: "hoihoi33",
-};
+const Constants = {};
 
 module.exports = { Constants };

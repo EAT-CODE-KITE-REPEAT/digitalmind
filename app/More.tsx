@@ -28,7 +28,7 @@ function App({
         />
 
         <MenuItem
-          onPress={() => Linking.openURL("mailto:bij@karsens.com")}
+          onPress={() => Linking.openURL("mailto:mindmirror@karsens.com")}
           title="Contact"
         />
 

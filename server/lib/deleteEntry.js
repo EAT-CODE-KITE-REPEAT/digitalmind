@@ -1,15 +1,6 @@
 const { publicUserFields, meUserFields } = require("./util");
 
-const deleteEvent = async (
-  req,
-  res,
-  sequelize,
-  User,
-  Event,
-  Participant,
-  Question,
-  Answer
-) => {
+const deleteEntry = async (req, res, sequelize, User, Entry) => {
   const { id, token } = req.body;
 
   if (!token) {
@@ -26,12 +17,12 @@ const deleteEvent = async (
     return;
   }
 
-  const event = await Event.findOne({ where: { id, userId: user.id } });
-  const destroyed = await event.destroy();
+  const entry = await Entry.findOne({ where: { id, userId: user.id } });
+  const destroyed = await entry.destroy();
 
   res.json({ response: destroyed });
 };
 
 module.exports = {
-  deleteEvent,
+  deleteEntry,
 };

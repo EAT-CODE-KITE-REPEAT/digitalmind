@@ -1,16 +1,7 @@
 const { Sequelize } = require("sequelize");
 const { publicUserFields } = require("./util");
 
-const events = async (
-  req,
-  res,
-  sequelize,
-  User,
-  Event,
-  Participant,
-  Question,
-  Answer
-) => {
+const entries = async (req, res, sequelize, User, Entry) => {
   const { token } = req.query;
 
   if (!token) {
@@ -27,12 +18,11 @@ const events = async (
     return;
   }
 
-  const events = await Event.findAll({
+  const allEntries = await Entry.findAll({
     where: { userId: user.id },
-    include: { model: Participant },
   });
 
-  res.json(events);
+  res.json(allEntries);
 };
 
-module.exports = { events };
+module.exports = { entries };

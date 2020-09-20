@@ -25,13 +25,13 @@ import {
   ATTENDANCE_NO,
   ATTENDANCE_YES,
   Device,
-  Event,
+  Entry,
   User,
 } from "./Store";
 
 type Props = {
   navigation: any;
-  events: Event[];
+  entries: Entry[];
   token: number;
   dispatch: Dispatch;
   user: User;
@@ -41,7 +41,7 @@ class App extends React.Component<Props> {
   componentDidMount() {
     this.sendPushtoken();
     this.fetchUser();
-    this.fetchEvents();
+    this.fetchEntries();
 
     AppState.addEventListener("change", this._handleAppStateChange);
   }
@@ -55,13 +55,13 @@ class App extends React.Component<Props> {
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
     ) {
-      this.fetchEvents();
+      this.fetchEntries();
       this.fetchUser();
     }
     this.setState({ appState: nextAppState });
   };
 
-  renderItem = ({ item, index }: { item: Event; index: number }) => {
+  renderItem = ({ item, index }: { item: Entry; index: number }) => {
     const attending = item.participants?.filter(
       (x) => x.attendance === ATTENDANCE_YES
     );
@@ -100,7 +100,7 @@ class App extends React.Component<Props> {
             },
             (buttonIndex: number) => {
               if (buttonIndex === 0) {
-                this.props.navigation.navigate("upsertEvent", { item });
+                this.props.navigation.navigate("upsertEntry", { item });
               }
               if (buttonIndex === 1) {
                 Share.share(
@@ -112,9 +112,9 @@ class App extends React.Component<Props> {
                 );
               }
               if (buttonIndex === 2) {
-                this.props.dispatch({ type: "DELETE_EVENT", value: item.id });
+                this.props.dispatch({ type: "DELETE_ENTRY", value: item.id });
 
-                this.deleteEvent(item.id);
+                this.deleteEntry(item.id);
               }
             }
           );
@@ -245,10 +245,10 @@ class App extends React.Component<Props> {
       });
   }
 
-  deleteEvent(id: number) {
+  deleteEntry(id: number) {
     const { token } = this.props;
 
-    const url = `${C.SERVER_ADDR}/deleteEvent`;
+    const url = `${C.SERVER_ADDR}/deleteEntry`;
 
     return fetch(url, {
       method: "POST",
@@ -270,11 +270,11 @@ class App extends React.Component<Props> {
       });
   }
 
-  fetchEvents() {
+  fetchEntries() {
     const { token, dispatch } = this.props;
 
     this.setState({ loading: true });
-    const url = `${C.SERVER_ADDR}/events?token=${token}`;
+    const url = `${C.SERVER_ADDR}/entries?token=${token}`;
 
     return fetch(url, {
       method: "GET",
@@ -285,7 +285,7 @@ class App extends React.Component<Props> {
     })
       .then((response) => response.json())
       .then(async (response) => {
-        dispatch({ type: "SET_EVENTS", value: response });
+        dispatch({ type: "SET_ENTRIES", value: response });
         this.setState({ loading: false });
       })
       .catch((error) => {
@@ -303,7 +303,7 @@ class App extends React.Component<Props> {
 
   renderPlusButton = () => (
     <TouchableOpacity
-      onPress={() => this.props.navigation.navigate("upsertEvent")}
+      onPress={() => this.props.navigation.navigate("upsertEntry")}
       hitSlop={{ top: 10, left: 10, right: 10, bottom: 10 }}
       style={{
         position: "absolute",
@@ -345,7 +345,7 @@ class App extends React.Component<Props> {
   );
 
   render() {
-    const { events } = this.props;
+    const { entries } = this.props;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -354,11 +354,11 @@ class App extends React.Component<Props> {
           <Text style={{ fontWeight: "bold", marginHorizontal: 15 }}>
             Agenda
           </Text>
-          {events?.length > 0 ? (
+          {entries?.length > 0 ? (
             <FlatList
               refreshing={this.state.loading}
-              onRefresh={() => this.fetchEvents()}
-              data={events}
+              onRefresh={() => this.fetchEntries()}
+              data={entries}
               renderItem={this.renderItem}
               ItemSeparatorComponent={Separator}
               ListFooterComponent={<View style={{ height: 80 }} />}
@@ -374,8 +374,8 @@ class App extends React.Component<Props> {
               }}
             >
               <Text style={{ margin: 20, textAlign: "center" }}>
-                Geen evenementen om weer te geven. Klik op de gele knop om er 1
-                aan te maken.
+                Geen entries om weer te geven. Klik op de gele knop om er 1 aan
+                te maken.
               </Text>
               <Image
                 source={require("./assets/empty.gif")}
@@ -391,7 +391,11 @@ class App extends React.Component<Props> {
 }
 
 const mapStateToProps = ({ device }: { device: Device }) => {
-  return { user: device.user, token: device.loginToken, events: device.events };
+  return {
+    user: device.user,
+    token: device.loginToken,
+    entries: device.entries,
+  };
 }; //
 const mapDispatchToProps = (dispatch) => ({
   dispatch,

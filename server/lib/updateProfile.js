@@ -1,6 +1,6 @@
 const { publicUserFields, meUserFields } = require("./util");
 
-const updateProfile = async (req, res, sequelize, User, Event) => {
+const updateProfile = async (req, res, sequelize, User, Entry) => {
   const {
     id,
     token,

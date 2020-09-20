@@ -1,4 +1,3 @@
-import * as Calendar from "expo-calendar";
 import React from "react";
 import {
   Alert,
@@ -10,44 +9,23 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Event } from "./Store";
+import { Entry } from "./Store";
 
 type Props = {
   route: any;
   navigation: any;
 };
 class SuccessScreen extends React.Component<Props> {
-  addToCalendar = async () => {
-    const {
-      route: { params },
-    } = this.props;
-
-    const event: Event = params?.event;
-
-    const { status } = await Calendar.requestCalendarPermissionsAsync();
-    if (status === "granted") {
-      const calendar = await Calendar.getDefaultCalendarAsync();
-
-      Calendar.createEventAsync(calendar.id, {
-        startDate: new Date(event.date),
-        endDate: new Date(event.endDate),
-        title: event.title,
-        notes: event.description,
-      });
-    }
-
-    //
-  };
   render() {
     const {
       route: { params },
       navigation,
     } = this.props;
 
-    const event: Event = params?.event;
+    const entry: Entry = params?.entry;
 
-    const url = `https://bij.link/?id=${event?.id}`;
-    const content = `${event?.description}\n\nKlik hier om je aanwezigheid aan te geven: \n\n${url}`;
+    const url = `https://mindmirror.co/?id=${entry?.id}`;
+    const content = `${entry?.description}\n\n${url}`;
     return (
       <View
         style={{
@@ -79,16 +57,14 @@ Hier is je link:`}</Text>
           title="Deel"
           onPress={() =>
             Share.share(
-              { title: event?.title, message: content },
+              { title: entry?.title, message: content },
               {
                 dialogTitle: "Delen",
-                subject: event?.title,
+                subject: entry?.title,
               }
             )
           }
         />
-
-        <Button title="Toevoegen aan agenda" onPress={this.addToCalendar} />
       </View>
     );
   }

@@ -8,11 +8,8 @@ import {
   View,
 } from "react-native";
 import { connect } from "react-redux";
-import DateTimeInput from "./Components/DateTimeInput";
-import { PlusMinusInput } from "./Components/PlusMinusInput";
-import Separator from "./Components/Separator";
 import Constants from "./Constants";
-import { Device, Event } from "./Store";
+import { Device, Entry } from "./Store";
 
 type Props = {
   navigation: any;
@@ -24,50 +21,34 @@ type State = {
   id?: number;
   title: string;
   description: string;
-  maxParticipants: string;
-  date: Date | null;
-  endDate: Date | null;
 };
 
-class _UpsertEvent extends React.Component<Props, State> {
+class _UpsertEntry extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const item: Event = this.props.route.params?.item;
+    const item: Entry = this.props.route.params?.item;
 
     if (item) {
       this.state = {
         id: item.id,
         title: item.title,
         description: item.description,
-        maxParticipants: String(item.maxParticipants),
-        date: new Date(item.date),
-        endDate: new Date(item.endDate),
       };
     } else {
       this.state = {
         title: "",
         description: "",
-        maxParticipants: "0",
-        date: null,
-        endDate: null,
       };
     }
   }
 
   submit = () => {
-    const {
-      id,
-      date,
-      endDate,
-      title,
-      description,
-      maxParticipants,
-    } = this.state;
+    const { id, title, description } = this.state;
 
     const { dispatch, navigation, token } = this.props;
 
-    const url = `${Constants.SERVER_ADDR}/upsertEvent`;
+    const url = `${Constants.SERVER_ADDR}/upsertEntry`;
 
     fetch(url, {
       method: "POST",
@@ -80,22 +61,19 @@ class _UpsertEvent extends React.Component<Props, State> {
         token,
         title,
         description,
-        maxParticipants,
-        date,
-        endDate,
       }),
     })
       .then((response) => response.json())
       .then(async ({ response }) => {
         if (id) {
-          dispatch({ type: "UPDATE_EVENT", value: response });
+          dispatch({ type: "UPDATE_ENTRY", value: response });
           navigation.goBack();
         } else {
-          dispatch({ type: "ADD_EVENT", value: response });
+          dispatch({ type: "ADD_ENTRY", value: response });
 
           navigation.dispatch(
             StackActions.replace("successScreen", {
-              event: response,
+              entry: response,
             })
           );
         }
@@ -114,17 +92,6 @@ class _UpsertEvent extends React.Component<Props, State> {
         }}
       >
         <View style={{ flex: 1 }}>
-          <DateTimeInput
-            onChange={(date) => this.setState({ date })}
-            placeholder="Begin datum/tijd"
-            value={this.state.date}
-          />
-          <Separator />
-          <DateTimeInput
-            onChange={(date) => this.setState({ endDate: date })}
-            placeholder="Eind datum/tijd"
-            value={this.state.endDate}
-          />
           <TextInput
             placeholder="Titel"
             value={this.state.title}
@@ -157,12 +124,6 @@ class _UpsertEvent extends React.Component<Props, State> {
             }}
           />
 
-          <PlusMinusInput
-            title="Max. aantal deelnemers"
-            value={this.state.maxParticipants}
-            onChange={(maxParticipants) => this.setState({ maxParticipants })}
-          />
-
           <Button title="Aanmaken" onPress={() => this.submit()} />
         </View>
       </SafeAreaView>
@@ -177,6 +138,6 @@ const mapDispatchToProps = (dispatch) => ({
   dispatch,
 });
 
-const UpsertEvent = connect(mapStateToProps, mapDispatchToProps)(_UpsertEvent);
+const UpsertEntry = connect(mapStateToProps, mapDispatchToProps)(_UpsertEntry);
 
-export default UpsertEvent;
+export default UpsertEntry;

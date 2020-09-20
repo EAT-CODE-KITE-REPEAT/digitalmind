@@ -1,5 +1,5 @@
-const serverAddr = "https://bij.leckrapi.xyz";
-const localAddr = "http://192.168.178.221:4005";
+const serverAddr = "https://mindmirror.leckrapi.xyz";
+const localAddr = "http://192.168.2.57:4006";
 const devLocal = false;
 
 const Constants = {
